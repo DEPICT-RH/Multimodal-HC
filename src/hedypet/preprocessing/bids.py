@@ -15,9 +15,13 @@ def path_to_bids_uri(image_path):
     dataset_name = os.path.basename(dataset_root)
     return f"bids:{dataset_name}:{sub}/{relative_path}"
 
-def make_pipeline_derivative_name(img_path,pipeline_root,derivative_entities):
+
+
+def make_derivative_name(img_path,pipeline_root,derivative_entities,suffix=None):
     _ , sub,  relative_path = re.split("/(sub-.{3})/",str(img_path))
-    source, suffix,_ = re.split("(_[^_]*\.nii\.gz)", relative_path)
+    source, _suffix,_ = re.split("(_[^_]*\.nii\.gz)", relative_path)
+    if suffix is None:
+        suffix=_suffix
     out_path = (pipeline_root / sub) / (source + derivative_entities +suffix)
     return out_path
 

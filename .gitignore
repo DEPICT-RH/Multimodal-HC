@@ -1,11 +1,15 @@
 # Created by https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
 
 # Edit at https://www.toptal.com/developers/gitignore?templates=python,visualstudiocode
+.venv*
+readouts/
+upload_to_huggingface.py
 src/hedypet/make_train_val_upload.py
 src/hedypet/analysis/*.csv
 src/hedypet/analysis/*.tex
 src/hedypet/analysis
 src/hedypet/public_neuro
+src/hedypet/movie
 manuscript/
 analysis_old/
 old/

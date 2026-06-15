@@ -1,4 +1,3 @@
-
 from nifti_dynamic.tacs import extract_multiple_tacs, save_tac
 import nibabel as nib
 import numpy as np
@@ -17,6 +16,7 @@ def extract_and_save_tac(dpet_path,seg_path,tac_save_folder,erosion):
     
     dpet_json = load_sidecar(dpet_path)
     create_derivatives_sidecar(tac_save_folder.parent,reference=None,sources=sources)
+    print(f"Extracting TACs to {tac_save_folder}")
     tacs_mean, tacs_std, tacs_n = extract_multiple_tacs(dpet_path, seg)
     for k in tacs_mean:
         save_tac(
@@ -24,6 +24,6 @@ def extract_and_save_tac(dpet_path,seg_path,tac_save_folder,erosion):
                 tacs_mean[k],
                 tacs_std[k],
                 tacs_n[k],
-                dpet_json["FrameTimesStart"],
-                dpet_json["FrameDuration"]
+                dpet_json["FrameTimesStart"] if "FrameTimesStart" in dpet_json else [0]*len(tacs_mean[k]),
+                dpet_json["FrameDuration"] if "FrameDuration" in dpet_json else [0]*len(tacs_mean[k]),
             )

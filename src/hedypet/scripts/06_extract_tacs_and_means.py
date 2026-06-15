@@ -1,7 +1,6 @@
-
 import nibabel as nib
 import numpy as np
-from hedypet.utils import load_splits, STATIC_ROOT, DYNAMIC_ROOT
+from hedypet.utils import get_train_subjects, DATASET_ROOT
 from hedypet.preprocessing.tacs import extract_and_save_tac
 from parse import parse
 
@@ -26,7 +25,7 @@ def main(sub, static_root, dynamic_root, rec="acstatPSF", erosions=[0,1]):
         raise Exception("Unsupported reconstruction")
     
     #Aorta derivatives are ignored for non-dynamic acquisitions
-    derivatives_aorta_sub = dynamic_root / f"derivatives/aorta/{sub}"
+    derivatives_aorta_sub = dynamic_root / f"derivatives/niftidynamic/{sub}"
 
     for erosion in erosions:
         
@@ -65,7 +64,7 @@ def main(sub, static_root, dynamic_root, rec="acstatPSF", erosions=[0,1]):
         if not aortasegments_tacs_path.exists() and rec == "acdynPSF":
             aortasegments_path = next((derivatives_aorta_sub).glob("*aortasegments*.nii.gz"))
             extract_and_save_tac(pet_path,aortasegments_path,aortasegments_tacs_path,erosion)
-
+    
     # Aorta VOIS (only for dynamic acquisition)
     for aortvois_path in (derivatives_aorta_sub).glob("*aortavois*.nii.gz"):
         voi_name = parse("{}seg-{voi_name}_dseg.nii.gz", aortvois_path.name).named["voi_name"]
@@ -84,14 +83,15 @@ if __name__ == "__main__":
     from tqdm import tqdm
     from multiprocessing import Pool
 
-    subs = load_splits()["all"]
+    subs = get_train_subjects()
 
     def worker(sub):
         for rec in ["acstatPSF","acdynPSF"]:
-            main(sub,static_root=STATIC_ROOT,dynamic_root=DYNAMIC_ROOT,rec=rec)
+            main(sub,dataset_root=DATASET_ROOT,rec=rec)
 
     for sub in subs:
         worker(sub)
+        
     with Pool(12) as pool:
         list(tqdm(pool.imap(worker, subs), total=len(subs)))
 

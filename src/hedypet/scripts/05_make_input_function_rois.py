@@ -1,13 +1,11 @@
-## VIGTIGT: installer pip install indexed_gzip = langt hurtigere! 
 import os 
 from nifti_dynamic.aorta_rois import extract_aorta_vois, extract_aorta_segments, average_early_pet_frames
 import nibabel as nib
 import numpy as np
-from hedypet.utils import load_splits, load_sidecar,  DYNAMIC_ROOT
+from hedypet.utils import load_splits, load_sidecar,  DATASET_ROOT
 from pathlib import Path
 from tqdm import tqdm 
 from nifti_dynamic.visualizations import plot_aorta_visualizations
-from hedypet.preprocessing.utils import draw_cylinder
 from hedypet.preprocessing.bids import create_derivatives_sidecar
 from nibabel.processing import resample_from_to
 
@@ -65,7 +63,7 @@ def main(sub, ml,px,dynamic_root):
             aorta_vois_path, 
             reference=dpet_path,
             sources=[dpet_path,totalseg_path],
-            Description=f"Aorta vois nifty_dynamic v0.3.1, volume: {ml}ml, cylinder width: {px}pixels."
+            Description=f"Aorta vois nifti_dynamic v0.3.1, volume: {ml}ml, cylinder width: {px}pixels."
         )
         plot_aorta_visualizations(
             pet,
@@ -78,7 +76,7 @@ if __name__ == "__main__":
     subs = load_splits()["all"]
 
 if __name__ == "__main__":
-    from hedypet.utils import  DYNAMIC_ROOT
+    from hedypet.utils import  DATASET_ROOT
     from multiprocessing import Pool
     
     subs = load_splits()["all"]
@@ -99,7 +97,7 @@ if __name__ == "__main__":
 
     def worker(sub):
         for param in param_sets:
-            main(sub,param["ml"],param["px"], DYNAMIC_ROOT)
+            main(sub,param["ml"],param["px"], DATASET_ROOT)
 
     with Pool(12) as pool:
         list(tqdm(pool.imap(worker, subs), total=len(subs)))

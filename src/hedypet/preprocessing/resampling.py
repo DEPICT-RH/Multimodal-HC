@@ -65,7 +65,7 @@ def resample_series(
 
 
 def resample_and_save_bids(img_path,target,spatial_reference,pipeline_root, derivative_entities,cval,order,rigid_registration=None, overwrite=False, is_2d_acquisition=False,**sidecar_entries):
-    out_path = make_pipeline_derivative_name(img_path,pipeline_root,derivative_entities)
+    out_path = make_derivative_name(img_path,pipeline_root,derivative_entities)
     
     if not out_path.exists() or overwrite:
         resample_series(

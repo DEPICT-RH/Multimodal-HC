@@ -18,7 +18,6 @@ def lbm_janma(patient_weight, patient_height, patient_sex):
         raise Exception()
     return LBM
 
-
 def lbm_ct_decazes(patient_weight, ts_total_nii, ts_tissue_nii):
 
     totalseg_img =ts_total_nii.get_fdata() 
