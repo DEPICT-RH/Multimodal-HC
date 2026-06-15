@@ -6,15 +6,14 @@ readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
     "antspyx>=0.5.4",
-    "ipykernel>=6.30.1",
-    "jinja2>=3.1.6",
+    "ipykernel>=7.3.0",
     "nibabel>=5.3.2",
     "nifti-dynamic>=0.1.0",
     "opencv-python>=4.12.0.88",
     "parse>=1.20.2",
-    "pingouin>=0.6.1",
     "python-dotenv>=1.1.0",
     "seaborn>=0.13.2",
+    "totalsegmentator>=2.14.0",
     "tqdm>=4.67.1",
 ]
 [build-system]

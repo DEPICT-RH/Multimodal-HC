@@ -1,12 +1,10 @@
-![hedyPET banner](banner.jpg)
+#A multimodal total-body dynamic 18F-FDG PET/CT/MRI dataset of 100 healthy humans
 
-A multimodal total-body dynamic 18F-FDG PET/CT/MRI dataset of 100 healthy humans for quantitative imaging research.
-
-📊 **[Data Explorer](https://hedypet.depict.dk)** | 📥 **[Get Data](https://hedypet.depict.dk/#how-to-acquire-the-data)** | 📄 **[Read Publication](https://doi.org/10.xxxx/xxxxxxx)**
+📊 **[Data Explorer](https://hedypet.depict.dk)** | 📥 **[Get NIfTI Data](https://huggingface.co/datasets/DEPICT-RH/Multimodal-HC)** | 📥 **[Get Listmode Data](https://doi.org/10.70883/JZJH3431)** | 📄 **[Read Publication](https://doi.org/10.xxxx/xxxxxxx)**
 
 ## Overview
 
-The hedyPET dataset provides comprehensive multimodal imaging data from 100 healthy participants, stratified by age and sex to capture physiological variation across the adult lifespan. This dataset addresses the critical need for normative reference data in quantitative PET imaging research.
+The Multimodal-HC dataset provides comprehensive multimodal imaging data from 100 healthy participants, stratified by age and sex to capture physiological variation across the adult lifespan. This dataset addresses the critical need for normative reference data in quantitative PET imaging research.
 
 ### Dataset Highlights ✨
 
@@ -43,13 +41,13 @@ Apply for complete imaging data (PET/CT/MRI) by signing up at [datacatalog.publi
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/depict-rh/hedypet.git
-cd hedypet
+git clone https://github.com/depict-rh/Multimodal-HC.git
+cd Multimodal-HC
 ```
 
 2. **Install the package:**
 ```bash
-pip install -e .
+uv sync
 ```
 
 
