@@ -48,6 +48,8 @@ cd Multimodal-HC
 2. **Install the package:**
 ```bash
 uv sync
+#or with conda
+conda env create -f environment.yml
 ```
 
 

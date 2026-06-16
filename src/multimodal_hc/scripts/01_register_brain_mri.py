@@ -16,30 +16,29 @@ def main(sub, dataset_root):
 
     registration_matrix = derivatives_root / f"registration_matrices/{sub}/mr2petct_head.txt"
 
-    if True:#registration_matrix.exists():
 
-        totalseg = next(derivatives_root.glob(f"totalsegmentator/{sub}/**/*br38f*total*dseg.nii.gz"))
+    totalseg = next(derivatives_root.glob(f"totalsegmentator/{sub}/**/*br38f*total*dseg.nii.gz"))
 
-        # Create target voxmap centered around brain
-        center_head_arr = get_head_center(totalseg)
-        target = get_voxmap_around_centerpoint(center_head_arr,1, (179,230,205))
+    # Create target voxmap centered around brain
+    center_head_arr = get_head_center(totalseg)
+    target = get_voxmap_around_centerpoint(center_head_arr,1, (179,230,205))
 
-        #Crop CT to head region and 
-        ct = next(sub_root.glob("ses-quadra/pet/*acstatPSF_pet.nii.gz"))
-        mr = next(sub_root.glob("ses-vida/anat/*MPRAGE*_T1w.nii.gz"))
-        with tempfile.TemporaryDirectory() as temp_dir:
-            tmp_cropped_ct = Path(temp_dir) / "tmp.nii.gz"
-            resample_series(
-                ct,
-                target,
-                tmp_cropped_ct,
-                cval=-1024,
-                order=3,
-                mode= "constant",
-            )
-            aff = register_rigid_ants(moving_path=mr,fixed_path=tmp_cropped_ct)
+    #Crop CT to head region and 
+    ct = next(sub_root.glob("ses-quadra/pet/*acstatPSF_pet.nii.gz"))
+    mr = next(sub_root.glob("ses-vida/anat/*MPRAGE*_T1w.nii.gz"))
+    with tempfile.TemporaryDirectory() as temp_dir:
+        tmp_cropped_ct = Path(temp_dir) / "tmp.nii.gz"
+        resample_series(
+            ct,
+            target,
+            tmp_cropped_ct,
+            cval=-1024,
+            order=3,
+            mode= "constant",
+        )
+        aff = register_rigid_ants(moving_path=mr,fixed_path=tmp_cropped_ct)
 
-        save_numpy_array(aff,registration_matrix)
+    save_numpy_array(aff,registration_matrix)
 
 if __name__ == "__main__":
     from multimodal_hc.utils import DATASET_ROOT

@@ -8,7 +8,8 @@ def main(sub,dataset_root):
     default_args = {
         "pipeline_root":derivatives_root / "pipeline-bodydyn",
         "derivative_entities":"_space-individual",
-        "Space": "Dynamic PET space"
+        "Space": "Dynamic PET space",
+        "overwrite":True
     }
 
     sub_dynamic_root = derivatives_root  / sub

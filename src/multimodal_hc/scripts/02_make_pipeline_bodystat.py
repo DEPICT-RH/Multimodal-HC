@@ -10,6 +10,7 @@ def main(sub,dataset_root):
         "pipeline_root":derivatives_root / "pipeline-bodystat",
         "derivative_entities":"_space-individual",
         "Space": "Static PET space",
+        "overwrite":True
     }
         
     sub_root = dataset_root / sub
