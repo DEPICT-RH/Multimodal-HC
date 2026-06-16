@@ -1,8 +1,7 @@
-#%%
-from hedypet.preprocessing.registration import register_rigid_ants
-from hedypet.preprocessing.resampling import resample_series
-from hedypet.preprocessing.utils import get_head_center, get_voxmap_around_centerpoint, save_numpy_array
-from hedypet.utils import get_train_subjects
+from multimodal_hc.preprocessing.registration import register_rigid_ants
+from multimodal_hc.preprocessing.resampling import resample_series
+from multimodal_hc.preprocessing.utils import get_head_center, get_voxmap_around_centerpoint, save_numpy_array
+from multimodal_hc.utils import get_train_subjects
 from tqdm import tqdm
 import numpy as np
 import tempfile 
@@ -15,9 +14,9 @@ def main(sub, dataset_root):
 
     sub_root = dataset_root / sub
 
-    registration_matrix = derivatives_root / f"registration_matrices2/{sub}/mr2petct_head.txt"
+    registration_matrix = derivatives_root / f"registration_matrices/{sub}/mr2petct_head.txt"
 
-    if not registration_matrix.exists():
+    if True:#registration_matrix.exists():
 
         totalseg = next(derivatives_root.glob(f"totalsegmentator/{sub}/**/*br38f*total*dseg.nii.gz"))
 
@@ -26,7 +25,7 @@ def main(sub, dataset_root):
         target = get_voxmap_around_centerpoint(center_head_arr,1, (179,230,205))
 
         #Crop CT to head region and 
-        ct = next(sub_root.glob("ses-quadra/ct/*br38f_ct.nii.gz"))
+        ct = next(sub_root.glob("ses-quadra/pet/*acstatPSF_pet.nii.gz"))
         mr = next(sub_root.glob("ses-vida/anat/*MPRAGE*_T1w.nii.gz"))
         with tempfile.TemporaryDirectory() as temp_dir:
             tmp_cropped_ct = Path(temp_dir) / "tmp.nii.gz"
@@ -43,13 +42,15 @@ def main(sub, dataset_root):
         save_numpy_array(aff,registration_matrix)
 
 if __name__ == "__main__":
-    from hedypet.utils import DATASET_ROOT
-    from multiprocessing import Pool
-    
+    from multimodal_hc.utils import DATASET_ROOT
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+
     subs = get_train_subjects()
-    
+
     def worker(sub):
         return main(sub,DATASET_ROOT)
-    
-    with Pool(1) as pool:
-        list(tqdm(pool.imap(worker, subs), total=len(subs)))
+
+    with ProcessPoolExecutor(max_workers=1) as executor:
+        futures = [executor.submit(worker, sub) for sub in subs]
+        for future in tqdm(as_completed(futures), total=len(subs)):
+            future.result()

@@ -1,7 +1,7 @@
 
 import nibabel as nib
 import numpy as np
-from hedypet.utils import get_train_subjects, DATASET_ROOT
+from multimodal_hc.utils import get_train_subjects, DATASET_ROOT
 import pandas as pd 
 
 def get_volume_readouts_from_segmentation(segmentation_file):
@@ -55,19 +55,23 @@ def get_volume_readouts_from_subject(sub,dataset_root):
 
 if __name__ == "__main__":
     from tqdm import tqdm
-    from multiprocessing import Pool
+    from concurrent.futures import ProcessPoolExecutor, as_completed
     from pathlib import Path
-    subs = get_train_subjects()
-    
-    READOUTS_ROOT = DATASET_ROOT / ("derivatives/readouts")
+    import os 
 
+    subs = get_train_subjects()
+
+    READOUTS_ROOT = DATASET_ROOT / ("derivatives/readouts")
+    os.makedirs(READOUTS_ROOT,exist_ok=True)
+    
     def worker(sub):
         df = get_volume_readouts_from_subject(sub, DATASET_ROOT)
         df["Subject"] = sub
         return df
 
-    with Pool(processes=8) as pool:
-        dfs = list(tqdm(pool.imap(worker, subs), total=len(subs)))
+    with ProcessPoolExecutor(max_workers=8) as executor:
+        futures = [executor.submit(worker, sub) for sub in subs]
+        dfs = [future.result() for future in tqdm(as_completed(futures), total=len(subs))]
 
     df = pd.concat(dfs)
     df.to_csv(str(READOUTS_ROOT/"volumes.csv"),index=False)

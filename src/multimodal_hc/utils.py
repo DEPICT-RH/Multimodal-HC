@@ -9,6 +9,9 @@ load_dotenv()
 
 DATASET_ROOT = Path(os.environ["DATASET_ROOT"])
 
+
+
+
 def get_train_subjects():
     return  [
         "sub-000", "sub-001", "sub-002", "sub-004", "sub-005", "sub-006", "sub-008", "sub-009", 
@@ -21,6 +24,12 @@ def get_train_subjects():
         "sub-073", "sub-074", "sub-075", "sub-076", "sub-077", "sub-078", "sub-080", "sub-081", 
         "sub-082", "sub-083", "sub-084", "sub-085", "sub-086", "sub-087", "sub-088", "sub-089",
         "sub-090", "sub-091", "sub-092", "sub-093", "sub-094", "sub-095", "sub-096", "sub-098"
+    ]
+
+
+def get_train_subjects():
+    return  [
+        "sub-000", "sub-001"
     ]
     
 def get_test_subjects():
@@ -51,5 +60,5 @@ def get_norm_consts(sub):
     norm_consts = {}
     for p in (DATASET_ROOT / "derivatives/pet_norm_consts").glob(f"{sub}/*.txt"):
         with open(p,"r") as handle:
-    norm_consts[p.stem] = float(handle.read())
+            norm_consts[p.stem] = float(handle.read())
     return norm_consts

@@ -1,10 +1,10 @@
 import nibabel as nib
-from hedypet.utils import load_splits, STATIC_ROOT
+from multimodal_hc.utils import get_train_subjects
 from tqdm import tqdm
-from hedypet.preprocessing.normalization import *
-from hedypet.utils import *
-from hedypet.preprocessing.utils import *
-from hedypet.preprocessing.bids import *
+from multimodal_hc.preprocessing.normalization import *
+from multimodal_hc.utils import *
+from multimodal_hc.preprocessing.utils import *
+from multimodal_hc.preprocessing.bids import *
 import pandas as pd 
 import os 
 
@@ -60,14 +60,15 @@ def add_constants_to_participants_tsv(sub,dataset_root):
         rows.append(row)
     df_consts = pd.DataFrame(rows)
     df_particpants = pd.read_csv(dataset_root/"participants.tsv",sep="\t")
-    df_particpants = pd.merge(df_particpants,df_consts,on="participant_id")
+    df_particpants = pd.merge(df_particpants,df_consts,on="participant_id",how="left",suffixes=("_left",""))
+    df_particpants = df_particpants.drop(columns=[c for c in df_particpants.columns if c.endswith("_left")])
     df_particpants.to_csv(dataset_root/"participants.tsv",sep="\t",index=False)
 
 if __name__ == "__main__":
-    from hedypet.utils import DATASET_ROOT
+    from multimodal_hc.utils import DATASET_ROOT
     
-    subs = load_splits()["all"]
+    subs = get_train_subjects()
     for sub in tqdm(subs):
-        main(sub,STATIC_ROOT)
+        main(sub,DATASET_ROOT)
 
     add_constants_to_participants_tsv(subs,DATASET_ROOT)

@@ -47,26 +47,3 @@ def binary_erode(arr,n):
         m = binary_erosion(m,iterations=n)
         new_mask[m] = k
     return new_mask
-
-
-
-def draw_cylinder(p1, p2, r, shape):
-    p1, p2 = np.asarray(p1, dtype=float), np.asarray(p2, dtype=float)
-    coords = np.moveaxis(np.indices(shape, dtype=float), 0, -1)
-    
-    seg_vec = p2 - p1
-    seg_len_sq = np.sum(seg_vec**2)
-    
-    if np.isclose(seg_len_sq, 0): # Case: p1 and p2 are the same (sphere)
-        return np.sum((coords - p1)**2, axis=-1) <= r**2
-        
-    p1_to_coords = coords - p1
-    # Projection: t = dot(p1_to_coords, seg_vec) / seg_len_sq
-    t = np.dot(p1_to_coords, seg_vec) / seg_len_sq
-    
-    # Perpendicular distance squared to infinite line:
-    # dist_sq = ||p1_to_coords X seg_vec||^2 / seg_len_sq
-    dist_sq = np.sum(np.cross(p1_to_coords, seg_vec)**2, axis=-1) / seg_len_sq
-    
-    # Check if on segment and within radius
-    return (t >= 0) & (t <= 1) & (dist_sq <= r**2)

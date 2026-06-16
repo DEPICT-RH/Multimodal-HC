@@ -1,6 +1,6 @@
 #A multimodal total-body dynamic 18F-FDG PET/CT/MRI dataset of 100 healthy humans
 
-📊 **[Data Explorer](https://hedypet.depict.dk)** | 📥 **[Get NIfTI Data](https://huggingface.co/datasets/DEPICT-RH/Multimodal-HC)** | 📥 **[Get Listmode Data](https://doi.org/10.70883/JZJH3431)** | 📄 **[Read Publication](https://doi.org/10.xxxx/xxxxxxx)**
+📊 **[Data Explorer](https://multimodal_hc.depict.dk)** | 📥 **[Get NIfTI Data](https://huggingface.co/datasets/DEPICT-RH/Multimodal-HC)** | 📥 **[Get Listmode Data](https://doi.org/10.70883/JZJH3431)** | 📄 **[Read Publication](https://doi.org/10.xxxx/xxxxxxx)**
 
 ## Overview
 
@@ -32,7 +32,7 @@ The repository includes pre-computed quantitative measures in the `readouts/` fo
 - Patlak Ki values for different input functions and number of frames
 - Participant metadata and demographics
 
-🌐 **Explore the data interactively**: [hedypet.streamlit.app](https://hedypet.streamlit.app)
+🌐 **Explore the data interactively**: [multimodal_hc.streamlit.app](https://multimodal_hc.streamlit.app)
 
 ### Full Image Data (Application Required)
 Apply for complete imaging data (PET/CT/MRI) by signing up at [datacatalog.publicneuro.eu](https://datacatalog.publicneuro.eu/dataset/super/V2) and completing the Data User Agreement.
@@ -54,8 +54,8 @@ uv sync
 3. **Set up environment variables:**
 Set the required environment variables in a `.env` file or in the terminal:
 ```bash
-hedypet_static_root=/path/to/hedypet/static
-hedypet_dynamic_root=/path/to/hedypet/dynamic
+multimodal-hc_static_root=/path/to/multimodal_hc/static
+multimodal-hc_dynamic_root=/path/to/multimodal_hc/dynamic
 ```
 
 ## Usage Examples
@@ -63,7 +63,7 @@ hedypet_dynamic_root=/path/to/hedypet/dynamic
 ### Load NIfTI images from raw and pipeline spaces
 ```python
 import nibabel as nib
-from hedypet.utils import RAW_ROOT, DERIVATIVES_ROOT
+from multimodal_hc.utils import RAW_ROOT, DERIVATIVES_ROOT
 
 sub = "sub-001"
 raw_root = RAW_ROOT / sub
@@ -125,22 +125,22 @@ The derivatives, standardized coordinate spaces, and readouts were created using
 ### Core Processing Scripts
 ```bash
 # 1. Create body-static coordinate space (all images resampled to acstatPSF/OSEM)
-python src/hedypet/scripts/01_make_pipeline_bodystat.py
+python src/multimodal_hc/scripts/01_make_pipeline_bodystat.py
 
 # 2. Create head coordinate space (high-resolution brain analysis)  
-python src/hedypet/scripts/02_make_pipeline_head.py
+python src/multimodal_hc/scripts/02_make_pipeline_head.py
 
 # 3. Create body-dynamic coordinate space (for kinetic modeling)
-python src/hedypet/scripts/03_make_pipeline_bodydyn.py
+python src/multimodal_hc/scripts/03_make_pipeline_bodydyn.py
 
 # 4. Generate normalization constants (for SUV/SUL calculations)
-python src/hedypet/scripts/04_make_normalization_consts.py
+python src/multimodal_hc/scripts/04_make_normalization_consts.py
 
 # 5. Create aorta input function ROIs (for kinetic modeling)
-python src/hedypet/scripts/05_make_input_function_rois.py
+python src/multimodal_hc/scripts/05_make_input_function_rois.py
 
 # 6. Extract time-activity curves and static measurements
-python src/hedypet/scripts/06_extract_tacs_and_means.py
+python src/multimodal_hc/scripts/06_extract_tacs_and_means.py
 
 # 7. Combine readouts to dataframes and save to readouts folder
 07_combine_to_dataframes.ipynb
@@ -158,7 +158,7 @@ E7 reconstruction parameter files are provided in the `reconstructions/` folder 
 If you use this dataset, please cite:
 
 ```bibtex
-@article{hinge2024hedypet,
+@article{hinge2024multimodal-hc,
   title={....},
   author={....},
   journal={Scientific Data},

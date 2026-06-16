@@ -3,8 +3,8 @@
 # Extensive metadata and original image files available at X
 
 # %%
-from hedypet.utils import DATASET_ROOT, load_train_subjects, get_time_frames_midpoint, DYNAMIC_ROOT
-from hedypet.utils import get_participant_metadata, get_norm_consts
+from multimodal_hc.utils import DATASET_ROOT, get_train_subjects, get_time_frames_midpoint
+from multimodal_hc.utils import get_participant_metadata, get_norm_consts
 from nifti_dynamic.tacs import load_tac
 from nifti_dynamic.patlak import roi_patlak
 from parse import parse
@@ -17,6 +17,7 @@ import numpy as np
 
 
 READOUTS_ROOT = DATASET_ROOT / "derivatives/readouts"
+os.makedirs(READOUTS_ROOT,exist_ok=True)
 
 def load_tsv(file_path):
     df = pd.read_csv(file_path,sep="\t")
@@ -43,11 +44,11 @@ def task_and_ix_to_region_name(task,ix):
     else:
         return region_names[task][ix]
 
-subs = load_train_subjects()
+subs = get_train_subjects()
 
 
 
-if not os.path.exists(df_path := "../../../readouts/metadata_80.csv"):
+if not os.path.exists(df_path := READOUTS_ROOT/"metadata.csv"):
     data = []
     for sub in subs:
         x = get_participant_metadata(sub)
@@ -78,7 +79,7 @@ if not os.path.exists(df_path) or not os.path.exists(df_path_input_function):
     data = []
     
     for sub in tqdm(subs):
-        tacs_root = (DYNAMIC_ROOT / f"derivatives/tacs/{sub}/acdynPSF")
+        tacs_root = (DATASET_ROOT / f"derivatives/tacs/{sub}/acdynPSF")
         tacs = list(tacs_root.glob("**/tac*"))
 
         # Load the TAC for each ROI with/without erosion
@@ -176,7 +177,7 @@ if not os.path.exists(df_path := READOUTS_ROOT/"patlak_ki.csv"):
     for sub in tqdm(subs):
 
         #Find all TACs (organs, input functions, and with/without erosion)
-        tacs_root = (DYNAMIC_ROOT / f"derivatives/tacs/{sub}/acdynPSF")
+        tacs_root = (DATASET_ROOT / f"derivatives/tacs/{sub}/acdynPSF")
         tacs = list(tacs_root.glob("**/tac*"))
 
         #Divide into input function TACs and ROI tacs

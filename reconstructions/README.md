@@ -1,6 +1,6 @@
 # E7 Reconstruction Parameters
 
-This folder contains E7 reconstruction parameter files to reproduce the clinical reconstructions from the hedyPET dataset.
+This folder contains E7 reconstruction parameter files to reproduce the clinical reconstructions from the multimodal_hc dataset.
 
 ## Files
 

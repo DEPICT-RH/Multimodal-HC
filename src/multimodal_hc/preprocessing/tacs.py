@@ -1,9 +1,9 @@
 from nifti_dynamic.tacs import extract_multiple_tacs, save_tac
 import nibabel as nib
 import numpy as np
-from hedypet.preprocessing.bids import create_derivatives_sidecar
-from hedypet.preprocessing.utils import binary_erode
-from hedypet.utils import load_sidecar
+from multimodal_hc.preprocessing.bids import create_derivatives_sidecar
+from multimodal_hc.preprocessing.utils import binary_erode
+from multimodal_hc.utils import load_sidecar
 
 def extract_and_save_tac(dpet_path,seg_path,tac_save_folder,erosion):
     if isinstance(seg_path, np.ndarray):

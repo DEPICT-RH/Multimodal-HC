@@ -4,8 +4,8 @@ import numpy as np
 from pathlib import Path
 from typing import Optional
 from nibabel.processing import resample_from_to
-from hedypet.preprocessing.utils import *
-from hedypet.preprocessing.bids import *
+from multimodal_hc.preprocessing.utils import *
+from multimodal_hc.preprocessing.bids import *
 
 def resample_series(
     input_path: Path,

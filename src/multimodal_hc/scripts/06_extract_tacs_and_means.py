@@ -1,31 +1,31 @@
 import nibabel as nib
 import numpy as np
-from hedypet.utils import get_train_subjects, DATASET_ROOT
-from hedypet.preprocessing.tacs import extract_and_save_tac
+from multimodal_hc.utils import get_train_subjects, DATASET_ROOT
+from multimodal_hc.preprocessing.tacs import extract_and_save_tac
 from parse import parse
 
-def main(sub, static_root, dynamic_root, rec="acstatPSF", erosions=[0,1]):
+def main(sub, dataset_root, rec="acstatPSF", erosions=[0,1]):
     """Organ mean extraction for PET reconstrunctions"""
 
     if rec == "acstatPSF":
-        derivatives = static_root / f"derivatives/pipeline-bodystat/{sub}"
-        pet_path = next((static_root / sub).glob(f"ses-quadra/pet/*rec-{rec}_pet.nii.gz"))
-        pipeline_root = static_root / f"derivatives/tacs"
+        derivatives = dataset_root / f"derivatives/pipeline-bodystat/{sub}"
+        pet_path = next((dataset_root / sub).glob(f"ses-quadra/pet/*rec-{rec}_pet.nii.gz"))
+        pipeline_root = dataset_root / f"derivatives/tacs"
 
     elif rec =="acdynPSF":
-        derivatives = dynamic_root / f"derivatives/pipeline-bodydyn/{sub}"
-        pet_path = next((dynamic_root / sub).glob("ses-quadra/pet/*acdyn*_pet.nii.gz"))
-        pipeline_root = dynamic_root / f"derivatives/tacs"
+        derivatives = dataset_root / f"derivatives/pipeline-bodydyn/{sub}"
+        pet_path = next((dataset_root / sub).glob("ses-quadra/pet/*acdyn*_pet.nii.gz"))
+        pipeline_root = dataset_root / f"derivatives/tacs"
         
     elif rec == "acstatOSEMhead":
-        derivatives = static_root / f"derivatives/pipeline-head1mm/{sub}"
-        pet_path = next((static_root / sub).glob(f"ses-quadra/pet/*rec-{rec}_pet.nii.gz"))
-        pipeline_root = static_root / f"derivatives/tacs"
+        derivatives = dataset_root / f"derivatives/pipeline-head1mm/{sub}"
+        pet_path = next((dataset_root / sub).glob(f"ses-quadra/pet/*rec-{rec}_pet.nii.gz"))
+        pipeline_root = dataset_root / f"derivatives/tacs"
     else:
         raise Exception("Unsupported reconstruction")
     
     #Aorta derivatives are ignored for non-dynamic acquisitions
-    derivatives_aorta_sub = dynamic_root / f"derivatives/niftidynamic/{sub}"
+    derivatives_aorta_sub = dataset_root / f"derivatives/niftidynamic/{sub}"
 
     for erosion in erosions:
         
@@ -81,7 +81,7 @@ def main(sub, static_root, dynamic_root, rec="acstatPSF", erosions=[0,1]):
 
 if __name__ == "__main__":
     from tqdm import tqdm
-    from multiprocessing import Pool
+    from concurrent.futures import ProcessPoolExecutor, as_completed
 
     subs = get_train_subjects()
 
@@ -91,7 +91,9 @@ if __name__ == "__main__":
 
     for sub in subs:
         worker(sub)
-        
-    with Pool(12) as pool:
-        list(tqdm(pool.imap(worker, subs), total=len(subs)))
+
+    with ProcessPoolExecutor(max_workers=12) as executor:
+        futures = [executor.submit(worker, sub) for sub in subs]
+        for future in tqdm(as_completed(futures), total=len(subs)):
+            future.result()
 
