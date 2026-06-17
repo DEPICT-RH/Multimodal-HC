@@ -51,6 +51,7 @@ source .venv/bin/activate
 #or with conda
 conda env create -f environment.yml
 conda activate multimodal-hc
+pip install -e .
 ```
 
 

@@ -30,17 +30,14 @@ region_names = {
     'synthsegparc' : load_tsv(next((DATASET_ROOT / "derivatives/synthseg").glob("**/*synthseg*.tsv"))),
     'synthseg' : load_tsv(next((DATASET_ROOT / "derivatives/synthseg").glob("**/*synthseg*.tsv"))),
     'totalimage' : {1:"body"},
-}
+    'niftidynamic': load_tsv((DATASET_ROOT/"derivatives/niftidynamic/dseg.tsv"))
 
-region_names_aorta = {1:"aorta_ascending",
-    2:"aorta_top",
-    3:"aorta_descending_upper",
-    4:"aorta_descending_lower"}
+}
 
 def task_and_ix_to_region_name(task,ix):
     ix = int(ix)
-    if task.startswith("niftidynamic"):
-        return region_names_aorta[ix]
+    if task.startswith("aorta"):
+        return region_names["niftidynamic"][ix]
     else:
         return region_names[task][ix]
 
@@ -90,7 +87,7 @@ for sub in tqdm(subs):
         # Save data to dataframe
         frame_ixs = list(range(len(mu_organ)))            
         tags = parse('{}/tacs/{sub}/acdynPSF/{task}/erosion-{erosion}/tac_{ix}.csv',str(tac_roi_path)).named
-        vals = {"PET Mean [Bq/mL]":mu_organ,"PET STD [Bq/mL]":std_organ,"Voxel Count":n_organ,"Frame Index":frame_ixs, "Frame Time Middle [s]":frame_time_middle}
+        vals = {"PET Mean [Bq/mL]":mu_organ,"PET STD [Bq/mL]":std_organ,"Frame Index":frame_ixs, "Frame Time Middle [s]":frame_time_middle}
         vals.update(tags)
         vals["Label Name"] = task_and_ix_to_region_name(vals["task"],vals["ix"])
         data.append(pd.DataFrame(vals))
@@ -98,9 +95,8 @@ for sub in tqdm(subs):
 # Rename and save 
 df = pd.concat(data)
 df = df.rename({"sub":"Subject","task":"Task","ix":"Label Index","erosion":"Erosion Iterations"},axis="columns")
-df["Volume [mL]"] = df["Voxel Count"]*(1.65*1.65* 1.65) / 1000
 df["Erosion Iterations"] = df["Erosion Iterations"].astype(int)
-df = df[['Subject', 'Task','Label Index', 'Label Name', 'Erosion Iterations', 'Frame Index', 'Frame Time Middle [s]', 'PET Mean [Bq/mL]', 'PET STD [Bq/mL]', 'Voxel Count',  'Volume [mL]']]
+df = df[['Subject', 'Task','Label Index', 'Label Name', 'Erosion Iterations', 'Frame Index', 'Frame Time Middle [s]', 'PET Mean [Bq/mL]', 'PET STD [Bq/mL]']]
 
 df_input_functions = df[df.Task.str.startswith("aortavois")]
 df_organs = df[~df.Task.str.startswith("aortavois")]
@@ -137,7 +133,7 @@ for sub in tqdm(subs):
 
         # Save data to dataframe
         tags = parse('{}/tacs/{sub}/acstatPSF/{task}/erosion-{erosion}/tac_{ix}.csv',str(tac_roi_path)).named
-        vals = {"PET Mean [Bq/mL]":float(mu_organ.item()),"PET STD [Bq/mL]":float(std_organ.item()),"Voxel Count":int(n_organ.item())}
+        vals = {"PET Mean [Bq/mL]":float(mu_organ.item()),"PET STD [Bq/mL]":float(std_organ.item())}
         vals.update(tags)
         vals["Label Name"] = task_and_ix_to_region_name(vals["task"],vals["ix"])
         data.append(vals)
@@ -145,9 +141,8 @@ for sub in tqdm(subs):
 # Rename and save 
 df = pd.DataFrame(data)
 df = df.rename({"sub":"Subject","task":"Task","ix":"Label Index","erosion":"Erosion Iterations"},axis="columns")
-df["Volume [mL]"] = df["Voxel Count"]*(1.65*1.65* 2.0) / 1000
 df["Erosion Iterations"] = df["Erosion Iterations"].astype(int)
-df = df[['Subject', 'Task','Label Index', 'Label Name', 'Erosion Iterations', 'PET Mean [Bq/mL]', 'PET STD [Bq/mL]', 'Voxel Count', 'Volume [mL]']]
+df = df[['Subject', 'Task','Label Index', 'Label Name', 'Erosion Iterations', 'PET Mean [Bq/mL]', 'PET STD [Bq/mL]']]
 df.to_csv(df_path)
 
 print("="*10 + "[Means Dataframe]" + "="*10,end="\n\n")
@@ -196,7 +191,7 @@ for sub in tqdm(subs):
                 tags_if = parse('{}/tacs/{}/acdynPSF/{task}/erosion-{erosion}/tac_{ix}.csv',str(tac_if_path)).named
                 tags_organ = parse('{}/tacs/{sub}/acdynPSF/{task}/erosion-{erosion}/tac_{ix}.csv',str(tac_roi_path)).named
                 if_tag = tags_if["task"]+"_"+task_and_ix_to_region_name(tags_if["task"], tags_if["ix"])
-                series = {"Patlak Ki":float(slope),"Voxel Count":int(n[0]),"Regression Frames":frame}
+                series = {"Patlak Ki":float(slope),"Regression Frames":frame}
                 series["Input Function Identifier"] = if_tag
                 series.update(tags_organ)
                 series["Label Name"] = task_and_ix_to_region_name(series["task"], series["ix"])
@@ -206,9 +201,8 @@ for sub in tqdm(subs):
 # Rename and save 
 df = pd.DataFrame(ki_data)
 df = df.rename({"sub":"Subject","task":"Task","ix":"Label Index","erosion":"Erosion Iterations"},axis="columns")
-df["Volume [mL]"] = df["Voxel Count"]*(1.65*1.65* 1.65) / 1000
 df["Erosion Iterations"] = df["Erosion Iterations"].astype(int)
-df = df[['Subject','Task',  'Label Index', 'Label Name', 'Erosion Iterations', 'Input Function Identifier', 'Regression Frames', 'Patlak Ki', 'Voxel Count', 'Volume [mL]']]
+df = df[['Subject','Task',  'Label Index', 'Label Name', 'Erosion Iterations', 'Input Function Identifier', 'Regression Frames', 'Patlak Ki']]
 df.to_csv(df_path)
 
 print("="*10 + "[Patlak Dataframe]" + "="*10,end="\n\n")

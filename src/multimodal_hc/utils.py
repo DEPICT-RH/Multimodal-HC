@@ -26,11 +26,6 @@ def get_train_subjects():
         "sub-090", "sub-091", "sub-092", "sub-093", "sub-094", "sub-095", "sub-096", "sub-098"
     ]
 
-
-def get_train_subjects():
-    return  [
-        "sub-000", "sub-001"
-    ]
     
 def get_test_subjects():
     return [ 
